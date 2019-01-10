@@ -17,11 +17,14 @@ router.get('/', async (req, res) => {
     { id: 3, title: 'Temp 3' }
   ]);
 
-  const {searchTerm} = req.query;
+  const { searchTerm } = req.query;
 
-  const notes = await Note
+  let notes = await Note
     .find()
     .sort({ createdAt: 1 });
+  if(!searchTerm){
+    notes = await Note.find(searchTerm);
+  }
   res.send(notes);
 });
 
@@ -66,6 +69,16 @@ router.put('/:id', async (req, res)=> {
   console.log('Update a Note');
   res.json({ id: 1, title: 'Updated Temp 1' });
 
+  const { id } = req.params;
+  const { title, content } = req.body;
+
+  const updateNote = {title, content};
+
+  const note = await Note
+    .findByIdAndUpdate(id, updateNote, {new: true});
+  if(!note) return res.status(404).send('Note not found');
+
+  res.send(note);
 });
 
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
@@ -79,7 +92,7 @@ router.delete('/:id', async (req, res)=> {
   const note = await
   Note
     .findOneAndDelete({_id: id});
-  if (!note) return res.status(404.).send('Note not found');
+  if (!note) return res.status(404).send('Note not found');
 
   res.send(note);
 });
