@@ -1,8 +1,11 @@
 'use strict';
 
 const express = require('express');
-
 const router = express.Router();
+
+const Note = require('../models/note');
+
+
 
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', async (req, res) => {
@@ -14,15 +17,14 @@ router.get('/', async (req, res) => {
     { id: 3, title: 'Temp 3' }
   ]);
 
-  const searchTerm = req.query;
+  const {searchTerm} = req.query;
 
-  const products = await 
-  Product
-  .find()
-  .sort({ createdAt: 1 });
-  res.send(products);
-
+  const notes = await Note
+    .find()
+    .sort({ createdAt: 1 });
+  res.send(notes);
 });
+
 
 /* ========== GET/READ A SINGLE ITEM ========== */
 router.get('/:id', async (req, res)=> {
@@ -32,27 +34,29 @@ router.get('/:id', async (req, res)=> {
 
   const id = req.params.id;
 
-  const product = await
+  const note = await
   Note
-  .findById(id);
-  if(!note) return res.status(404).send('Product not found');
+    .findById(id);
+  if(!note) return res.status(404).send('Note not found');
 
-  res.send(note)
+  res.send(note);
 });
 
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', async (req, res)=> {
 
   console.log('Create a Note');
-  res.location('path/to/new/document').status(201).json({ id: 2, title: 'Temp 2' });
+  res.location('path/to/new/document')
+    .status(201).json({ id: 2, title: 'Temp 2' });
 
-  const note = {
+  const newNote = {
     name: req.body.name,
     content: req.body.content
   };
 
-  await product.save();
-  res.send(note);
+  const notes = await 
+  newNote.save();
+  res.send(newNote);
 
 });
 
@@ -74,10 +78,10 @@ router.delete('/:id', async (req, res)=> {
 
   const note = await
   Note
-  .findOneAndDelete({_id: id});
-  if (!product) return res.status(404.).send('Note not found')
+    .findOneAndDelete({_id: id});
+  if (!note) return res.status(404.).send('Note not found');
 
-  res.send(product);
+  res.send(note);
 });
 
 module.exports = router;
